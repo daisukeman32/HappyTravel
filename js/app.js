@@ -21,7 +21,7 @@ let appSettings = {
 };
 
 let currentQuestion = 0;
-const totalQuestions = 6;
+const totalQuestions = 5;
 
 let mainMap = null;
 let resultMap = null;
@@ -235,14 +235,7 @@ function setupEventListeners() {
         goToQuestion(5);
     });
 
-    // Q5: 旅のスタイル
-    setupOptionButtons('.environment-options .option-btn', (value) => {
-        playSound('button');
-        appSettings.environment = value;
-        setTimeout(() => goToQuestion(6), 300);
-    });
-
-    // Q6: モード
+    // Q5: モード
     setupOptionButtons('.mode-options .option-btn', (value) => {
         playSound('button');
         appSettings.mode = value;
