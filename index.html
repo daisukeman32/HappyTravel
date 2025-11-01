@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Travel</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <!-- イントロ画面 -->
+        <section id="intro-screen" class="screen active">
+            <div class="question-container">
+                <div class="intro-content">
+                    <h1 class="app-title">Happy Travel</h1>
+                    <p class="intro-text">運命を変えるかもしれない<br>幸運の旅先を決めよう</p>
+                    <p class="intro-sub">5つの質問に答えてください</p>
+                    <button class="btn" id="start-questions-btn">はじめる</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 質問画面 -->
+        <section id="question-screen" class="screen">
+            <!-- プログレスバー -->
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-text" id="progress-text">質問 1 / 5</div>
+
+            <div class="question-container">
+                <!-- Q1: 出発地（都道府県） -->
+                <div class="question" id="q1" data-question="1">
+                    <h2 class="question-title">出発地の都道府県を選んでください</h2>
+                    <p class="question-subtitle">あなたが今いる、または出発する都道府県</p>
+
+                    <div class="select-wrapper">
+                        <select id="departure-pref" class="select-input">
+                            <option value="">選択してください</option>
+                        </select>
+                    </div>
+
+                    <button class="btn hidden" id="q1-next">次へ</button>
+                </div>
+
+                <!-- Q1-2: 出発地（市区町村） -->
+                <div class="question hidden" id="q1-2" data-question="1">
+                    <h2 class="question-title">出発地の市区町村を選んでください</h2>
+                    <p class="question-subtitle">より正確な距離計算のため</p>
+
+                    <div class="select-wrapper">
+                        <select id="departure-city" class="select-input">
+                            <option value="">選択してください</option>
+                        </select>
+                    </div>
+
+                    <button class="btn hidden" id="q1-2-next">次へ</button>
+                </div>
+
+                <!-- Q2: 予算 -->
+                <div class="question hidden" id="q2" data-question="2">
+                    <h2 class="question-title">予算はいくらですか？</h2>
+                    <p class="question-subtitle">交通費と宿泊費の合計予算（円）</p>
+
+                    <div class="budget-options">
+                        <button class="option-btn" data-value="30000">
+                            <span class="option-value">30,000円</span>
+                            <span class="option-label">気軽に</span>
+                        </button>
+                        <button class="option-btn" data-value="50000">
+                            <span class="option-value">50,000円</span>
+                            <span class="option-label">標準</span>
+                        </button>
+                        <button class="option-btn" data-value="100000">
+                            <span class="option-value">100,000円</span>
+                            <span class="option-label">ゆったり</span>
+                        </button>
+                        <button class="option-btn" data-value="custom">
+                            <span class="option-value">カスタム</span>
+                            <span class="option-label">自分で入力</span>
+                        </button>
+                    </div>
+
+                    <div class="custom-budget hidden" id="custom-budget">
+                        <input type="number" id="budget-input" class="text-input" placeholder="金額を入力（円）" min="10000" step="1000">
+                    </div>
+
+                    <button class="btn hidden" id="q2-next">次へ</button>
+                </div>
+
+                <!-- Q3: 宿泊日数 -->
+                <div class="question hidden" id="q3" data-question="3">
+                    <h2 class="question-title">何泊しますか？</h2>
+                    <p class="question-subtitle">旅の期間を選んでください</p>
+
+                    <div class="nights-options">
+                        <button class="option-btn" data-value="0">
+                            <span class="option-value">日帰り</span>
+                            <span class="option-label">サクッと</span>
+                        </button>
+                        <button class="option-btn" data-value="1">
+                            <span class="option-value">1泊2日</span>
+                            <span class="option-label">週末</span>
+                        </button>
+                        <button class="option-btn" data-value="2">
+                            <span class="option-value">2泊3日</span>
+                            <span class="option-label">連休</span>
+                        </button>
+                        <button class="option-btn" data-value="3">
+                            <span class="option-value">3泊4日</span>
+                            <span class="option-label">長期休暇</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Q4: 交通手段 -->
+                <div class="question hidden" id="q4" data-question="4">
+                    <h2 class="question-title">使える交通手段は？</h2>
+                    <p class="question-subtitle">複数選択可</p>
+
+                    <div class="transport-options">
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="transport" value="train" checked>
+                            <span class="checkbox-box"></span>
+                            <div class="checkbox-content">
+                                <span class="option-value">電車・新幹線</span>
+                                <span class="option-label">約20円/km</span>
+                            </div>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="transport" value="airplane">
+                            <span class="checkbox-box"></span>
+                            <div class="checkbox-content">
+                                <span class="option-value">飛行機</span>
+                                <span class="option-label">遠方へ快適に</span>
+                            </div>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="transport" value="car">
+                            <span class="checkbox-box"></span>
+                            <div class="checkbox-content">
+                                <span class="option-value">車</span>
+                                <span class="option-label">自由に移動</span>
+                            </div>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="transport" value="bus">
+                            <span class="checkbox-box"></span>
+                            <div class="checkbox-content">
+                                <span class="option-value">高速バス</span>
+                                <span class="option-label">約10円/km</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <button class="btn" id="q4-next">次へ</button>
+                </div>
+
+                <!-- Q5: モード -->
+                <div class="question hidden" id="q5" data-question="5">
+                    <h2 class="question-title">どんな旅にしますか？</h2>
+                    <p class="question-subtitle">旅のスタイルを選んでください</p>
+
+                    <div class="mode-options">
+                        <button class="option-btn large" data-value="normal">
+                            <span class="option-value">通常モード</span>
+                            <span class="option-label">予算と日数に合わせて最適化</span>
+                        </button>
+                        <button class="option-btn large" data-value="mystery">
+                            <span class="option-value">ミステリーモード</span>
+                            <span class="option-label">予算内ならどこでもOK</span>
+                        </button>
+                        <button class="option-btn large" data-value="extreme">
+                            <span class="option-value">絶対行かないモード</span>
+                            <span class="option-label">普段選ばない遠い場所へ</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ルーレット画面 -->
+        <section id="roulette-screen" class="screen">
+            <div class="roulette-container">
+                <h2 class="roulette-title" id="roulette-title">都道府県を選択中...</h2>
+
+                <div class="roulette-display" id="prefecture-roulette">
+                    <div class="roulette-item" id="roulette-item"></div>
+                </div>
+
+                <div class="roulette-display hidden" id="city-roulette">
+                    <div class="roulette-item" id="city-roulette-item"></div>
+                </div>
+
+                <div id="map" class="map-container"></div>
+            </div>
+        </section>
+
+        <!-- 結果画面 -->
+        <section id="result-screen" class="screen">
+            <div class="result-container">
+                <h2 class="result-title">あなたの旅先</h2>
+
+                <div class="destination">
+                    <div class="destination-main">
+                        <span class="destination-pref" id="result-prefecture"></span>
+                        <span class="destination-city" id="result-city"></span>
+                    </div>
+                    <p class="destination-desc" id="result-description"></p>
+                </div>
+
+                <div class="trip-details">
+                    <div class="detail-row">
+                        <span class="detail-label">出発地</span>
+                        <span class="detail-value" id="result-departure"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">距離</span>
+                        <span class="detail-value" id="result-distance"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">予想交通費</span>
+                        <span class="detail-value" id="result-cost"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">移動時間</span>
+                        <span class="detail-value" id="result-time"></span>
+                    </div>
+                </div>
+
+                <div id="result-map" class="map-container"></div>
+
+                <div class="result-actions">
+                    <button class="btn-secondary" id="retry-btn">もう一度回す</button>
+                    <button class="btn-secondary" id="share-btn">結果をシェア</button>
+                    <button class="btn" id="reset-btn">最初から</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="data/prefectures.js"></script>
+    <script src="data/cities.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

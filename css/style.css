@@ -1,0 +1,574 @@
+/* ======================
+   リセット
+   ====================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ======================
+   カラーパレット（グレー+黒のみ）
+   ====================== */
+:root {
+    --color-white: #ffffff;
+    --color-black: #000000;
+    --color-gray-900: #1a1a1a;
+    --color-gray-800: #333333;
+    --color-gray-700: #4d4d4d;
+    --color-gray-500: #808080;
+    --color-gray-300: #cccccc;
+    --color-gray-200: #e0e0e0;
+    --color-gray-100: #f5f5f5;
+}
+
+/* ======================
+   ベーススタイル
+   ====================== */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue',
+                 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+    line-height: 1.7;
+    color: var(--color-gray-800);
+    background: var(--color-white);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.app {
+    width: 100%;
+    max-width: 700px;
+}
+
+/* ======================
+   画面管理
+   ====================== */
+.screen {
+    display: none;
+    animation: fadeIn 0.6s ease;
+}
+
+.screen.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ======================
+   イントロ画面
+   ====================== */
+.intro-content {
+    text-align: center;
+    padding: 80px 40px;
+}
+
+.app-title {
+    font-size: 3.5rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    color: var(--color-black);
+    margin-bottom: 40px;
+}
+
+.intro-text {
+    font-size: 1.25rem;
+    color: var(--color-gray-700);
+    margin-bottom: 20px;
+    line-height: 2;
+}
+
+.intro-sub {
+    font-size: 1rem;
+    color: var(--color-gray-500);
+    margin-bottom: 60px;
+}
+
+/* ======================
+   質問画面
+   ====================== */
+.progress-bar {
+    width: 100%;
+    height: 2px;
+    background: var(--color-gray-200);
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--color-black);
+    transition: width 0.5s ease;
+    width: 0%;
+}
+
+.progress-text {
+    text-align: right;
+    font-size: 0.875rem;
+    color: var(--color-gray-500);
+    margin-bottom: 40px;
+}
+
+.question-container {
+    padding: 40px 20px;
+}
+
+.question {
+    animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.question-title {
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--color-black);
+    margin-bottom: 15px;
+    letter-spacing: 0.02em;
+}
+
+.question-subtitle {
+    font-size: 1rem;
+    color: var(--color-gray-500);
+    margin-bottom: 50px;
+}
+
+/* ======================
+   入力フィールド
+   ====================== */
+.input-group {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.text-input {
+    flex: 1;
+    padding: 18px 20px;
+    font-size: 1.1rem;
+    border: 1px solid var(--color-gray-300);
+    background: var(--color-white);
+    color: var(--color-gray-800);
+    transition: all 0.3s ease;
+}
+
+.text-input:focus {
+    outline: none;
+    border-color: var(--color-gray-800);
+}
+
+.text-input::placeholder {
+    color: var(--color-gray-300);
+}
+
+.select-wrapper {
+    margin-bottom: 40px;
+}
+
+.select-input {
+    width: 100%;
+    padding: 18px 20px;
+    font-size: 1.1rem;
+    border: 1px solid var(--color-gray-300);
+    background: var(--color-white);
+    color: var(--color-gray-800);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.select-input:focus {
+    outline: none;
+    border-color: var(--color-gray-800);
+}
+
+/* ======================
+   ボタン
+   ====================== */
+.btn, .btn-secondary {
+    padding: 18px 40px;
+    font-size: 1.1rem;
+    font-weight: 400;
+    border: 1px solid var(--color-black);
+    background: var(--color-black);
+    color: var(--color-white);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.05em;
+}
+
+.btn:hover {
+    background: var(--color-gray-800);
+    border-color: var(--color-gray-800);
+}
+
+.btn-secondary {
+    background: var(--color-white);
+    color: var(--color-black);
+    border: 1px solid var(--color-black);
+}
+
+.btn-secondary:hover {
+    background: var(--color-gray-100);
+}
+
+/* ======================
+   選択肢ボタン
+   ====================== */
+.budget-options,
+.nights-options,
+.mode-options,
+.transport-options {
+    display: grid;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.budget-options,
+.nights-options {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.mode-options {
+    grid-template-columns: 1fr;
+}
+
+.option-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    border: 1px solid var(--color-gray-300);
+    background: var(--color-white);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.option-btn:hover {
+    border-color: var(--color-gray-800);
+    background: var(--color-gray-100);
+}
+
+.option-btn.selected {
+    border-color: var(--color-black);
+    background: var(--color-gray-100);
+}
+
+.option-btn.large {
+    padding: 40px 30px;
+}
+
+.option-value {
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: var(--color-black);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.option-label {
+    font-size: 0.9rem;
+    color: var(--color-gray-500);
+    display: block;
+}
+
+/* ======================
+   チェックボックス
+   ====================== */
+.checkbox-option {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid var(--color-gray-300);
+    background: var(--color-white);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.checkbox-option:hover {
+    border-color: var(--color-gray-800);
+    background: var(--color-gray-100);
+}
+
+.checkbox-option input[type="checkbox"] {
+    display: none;
+}
+
+.checkbox-box {
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--color-gray-300);
+    margin-right: 15px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.checkbox-option input[type="checkbox"]:checked + .checkbox-box {
+    background: var(--color-black);
+    border-color: var(--color-black);
+}
+
+.checkbox-option input[type="checkbox"]:checked + .checkbox-box::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 8px;
+    border-left: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: translate(-50%, -60%) rotate(-45deg);
+}
+
+.checkbox-content {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ======================
+   カスタム予算入力
+   ====================== */
+.custom-budget {
+    margin-bottom: 30px;
+}
+
+/* ======================
+   ルーレット画面
+   ====================== */
+.roulette-container {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.roulette-title {
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--color-gray-700);
+    margin-bottom: 60px;
+    letter-spacing: 0.05em;
+}
+
+.roulette-display {
+    margin: 60px 0;
+}
+
+.roulette-item {
+    display: inline-block;
+    padding: 40px 80px;
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: var(--color-black);
+    border: 2px solid var(--color-black);
+    letter-spacing: 0.1em;
+    min-width: 300px;
+    transition: all 0.2s ease;
+}
+
+.roulette-item.highlight {
+    background: var(--color-black);
+    color: var(--color-white);
+    transform: scale(1.05);
+}
+
+/* ======================
+   結果画面
+   ====================== */
+.result-container {
+    padding: 40px 20px;
+}
+
+.result-title {
+    font-size: 1.25rem;
+    font-weight: 300;
+    color: var(--color-gray-500);
+    margin-bottom: 30px;
+    text-align: center;
+    letter-spacing: 0.1em;
+}
+
+.destination {
+    text-align: center;
+    margin-bottom: 60px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.destination-main {
+    margin-bottom: 20px;
+}
+
+.destination-pref {
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--color-gray-700);
+    margin-right: 15px;
+}
+
+.destination-city {
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--color-black);
+    letter-spacing: 0.05em;
+}
+
+.destination-desc {
+    font-size: 1.1rem;
+    color: var(--color-gray-500);
+    margin-top: 15px;
+}
+
+/* ======================
+   旅行詳細
+   ====================== */
+.trip-details {
+    margin-bottom: 40px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-size: 1rem;
+    color: var(--color-gray-500);
+}
+
+.detail-value {
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: var(--color-black);
+}
+
+/* ======================
+   地図
+   ====================== */
+.map-container {
+    width: 100%;
+    height: 400px;
+    margin: 40px 0;
+    border: 1px solid var(--color-gray-200);
+}
+
+/* ======================
+   結果アクション
+   ====================== */
+.result-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 40px;
+}
+
+.result-actions .btn {
+    grid-column: 1 / -1;
+}
+
+/* ======================
+   レスポンシブ
+   ====================== */
+@media (max-width: 640px) {
+    .app-title {
+        font-size: 2.5rem;
+    }
+
+    .intro-text {
+        font-size: 1.1rem;
+    }
+
+    .question-title {
+        font-size: 1.5rem;
+    }
+
+    .input-group {
+        flex-direction: column;
+    }
+
+    .budget-options,
+    .nights-options {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .roulette-item {
+        padding: 30px 40px;
+        font-size: 2.5rem;
+        min-width: 250px;
+    }
+
+    .destination-city {
+        font-size: 2rem;
+    }
+
+    .map-container {
+        height: 300px;
+    }
+
+    .result-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .result-actions .btn {
+        grid-column: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .app-title {
+        font-size: 2rem;
+    }
+
+    .intro-content {
+        padding: 60px 20px;
+    }
+
+    .question-title {
+        font-size: 1.25rem;
+    }
+
+    .budget-options,
+    .nights-options {
+        grid-template-columns: 1fr;
+    }
+
+    .roulette-item {
+        padding: 20px 30px;
+        font-size: 2rem;
+        min-width: 200px;
+    }
+
+    .destination-city {
+        font-size: 1.75rem;
+    }
+}
