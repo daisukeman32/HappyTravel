@@ -26,6 +26,28 @@ let mainMap = null;
 let resultMap = null;
 
 // ======================
+// 効果音
+// ======================
+const sounds = {
+    button: new Audio('se/決定ボタンを押す26.mp3'),
+    rouletteSpin: new Audio('se/電子ルーレット回転中.mp3'),
+    rouletteSlow: new Audio('se/電子ルーレットが徐々に止まる.mp3'),
+    rouletteBlink: new Audio('se/電子ルーレットの出目が点滅.mp3')
+};
+
+// 音声再生ヘルパー関数
+function playSound(soundName) {
+    try {
+        if (sounds[soundName]) {
+            sounds[soundName].currentTime = 0; // 再生位置をリセット
+            sounds[soundName].play().catch(e => console.log('音声再生エラー:', e));
+        }
+    } catch (e) {
+        console.log('音声再生エラー:', e);
+    }
+}
+
+// ======================
 // 初期化
 // ======================
 document.addEventListener('DOMContentLoaded', () => {
@@ -87,6 +109,7 @@ function setupEventListeners() {
     });
 
     document.getElementById('q1-next').addEventListener('click', () => {
+        playSound('button');
         // 市区町村セレクトボックスを更新
         const citySelect = document.getElementById('departure-city');
         citySelect.innerHTML = '<option value="">選択してください</option>';
@@ -116,12 +139,14 @@ function setupEventListeners() {
     });
 
     document.getElementById('q1-2-next').addEventListener('click', () => {
+        playSound('button');
         console.log('出発地:', departurePref.name, departureCity.name);
         goToQuestion(2);
     });
 
     // Q2: 予算
     setupOptionButtons('.budget-options .option-btn', (value) => {
+        playSound('button');
         if (value === 'custom') {
             document.getElementById('custom-budget').classList.remove('hidden');
             document.getElementById('q2-next').classList.remove('hidden');
@@ -133,6 +158,7 @@ function setupEventListeners() {
     });
 
     document.getElementById('q2-next').addEventListener('click', () => {
+        playSound('button');
         const customBudget = parseInt(document.getElementById('budget-input').value);
         if (customBudget && customBudget >= 10000) {
             appSettings.budget = customBudget;
@@ -144,12 +170,14 @@ function setupEventListeners() {
 
     // Q3: 宿泊日数
     setupOptionButtons('.nights-options .option-btn', (value) => {
+        playSound('button');
         appSettings.nights = parseInt(value);
         setTimeout(() => goToQuestion(4), 300);
     });
 
     // Q4: 交通手段
     document.getElementById('q4-next').addEventListener('click', () => {
+        playSound('button');
         const checked = document.querySelectorAll('input[name="transport"]:checked');
         if (checked.length === 0) {
             alert('交通手段を1つ以上選択してください');
@@ -161,14 +189,24 @@ function setupEventListeners() {
 
     // Q5: モード
     setupOptionButtons('.mode-options .option-btn', (value) => {
+        playSound('button');
         appSettings.mode = value;
         setTimeout(() => startRoulette(), 500);
     });
 
     // 結果画面
-    document.getElementById('retry-btn').addEventListener('click', retryJourney);
-    document.getElementById('reset-btn').addEventListener('click', resetToIntro);
-    document.getElementById('share-btn').addEventListener('click', shareResult);
+    document.getElementById('retry-btn').addEventListener('click', () => {
+        playSound('button');
+        retryJourney();
+    });
+    document.getElementById('reset-btn').addEventListener('click', () => {
+        playSound('button');
+        resetToIntro();
+    });
+    document.getElementById('share-btn').addEventListener('click', () => {
+        playSound('button');
+        shareResult();
+    });
 }
 
 // ======================
@@ -190,6 +228,7 @@ function setupOptionButtons(selector, callback) {
 // 質問開始
 // ======================
 function startQuestions() {
+    playSound('button');
     showScreen('question-screen');
     goToQuestion(1);
 }
@@ -316,6 +355,9 @@ async function runPrefectureRoulette(eligiblePrefectures) {
     const iterations = 30;
     const baseDelay = 50;
 
+    // ルーレット開始音
+    playSound('rouletteSpin');
+
     for (let i = 0; i < iterations; i++) {
         const randomPref = eligiblePrefectures[Math.floor(Math.random() * eligiblePrefectures.length)];
         rouletteItem.textContent = randomPref.name;
@@ -328,6 +370,11 @@ async function runPrefectureRoulette(eligiblePrefectures) {
         const delay = baseDelay + (i * 15);
         await sleep(delay);
         rouletteItem.classList.remove('highlight');
+
+        // 終盤で減速音を再生
+        if (i === iterations - 5) {
+            playSound('rouletteSlow');
+        }
     }
 
     let finalSelection;
@@ -346,6 +393,9 @@ async function runPrefectureRoulette(eligiblePrefectures) {
     rouletteItem.textContent = finalSelection.name;
     rouletteItem.classList.add('highlight');
 
+    // 確定時の点滅音
+    playSound('rouletteBlink');
+
     if (mainMap) {
         mainMap.setView([finalSelection.lat, finalSelection.lng], 8);
     }
@@ -361,6 +411,9 @@ async function runCityRoulette(eligibleCities) {
     const iterations = 20;
     const baseDelay = 50;
 
+    // ルーレット開始音
+    playSound('rouletteSpin');
+
     for (let i = 0; i < iterations; i++) {
         const randomCity = eligibleCities[Math.floor(Math.random() * eligibleCities.length)];
         rouletteItem.textContent = randomCity.name;
@@ -373,11 +426,19 @@ async function runCityRoulette(eligibleCities) {
         const delay = baseDelay + (i * 10);
         await sleep(delay);
         rouletteItem.classList.remove('highlight');
+
+        // 終盤で減速音を再生
+        if (i === iterations - 5) {
+            playSound('rouletteSlow');
+        }
     }
 
     const finalSelection = eligibleCities[Math.floor(Math.random() * eligibleCities.length)];
     rouletteItem.textContent = finalSelection.name;
     rouletteItem.classList.add('highlight');
+
+    // 確定時の点滅音
+    playSound('rouletteBlink');
 
     if (mainMap) {
         mainMap.setView([finalSelection.lat, finalSelection.lng], 12);
