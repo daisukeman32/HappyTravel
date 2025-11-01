@@ -358,6 +358,85 @@ body {
 }
 
 /* ======================
+   運命の質問画面
+   ====================== */
+.destiny-content {
+    text-align: center;
+    padding: 80px 40px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.destiny-title {
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--color-gray-500);
+    margin-bottom: 40px;
+    letter-spacing: 0.1em;
+}
+
+.destiny-question {
+    font-size: 1.75rem;
+    font-weight: 300;
+    color: var(--color-black);
+    line-height: 2.2;
+    margin-bottom: 80px;
+    letter-spacing: 0.02em;
+}
+
+.destiny-options {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.btn-destiny {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 30px;
+    border: 2px solid var(--color-black);
+    background: var(--color-white);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.btn-destiny.accept:hover {
+    background: var(--color-black);
+}
+
+.btn-destiny.accept:hover .destiny-option-main,
+.btn-destiny.accept:hover .destiny-option-sub {
+    color: var(--color-white);
+}
+
+.btn-destiny.reject {
+    border-color: var(--color-gray-300);
+}
+
+.btn-destiny.reject:hover {
+    background: var(--color-gray-100);
+    border-color: var(--color-gray-500);
+}
+
+.destiny-option-main {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--color-black);
+    margin-bottom: 10px;
+    display: block;
+    letter-spacing: 0.05em;
+}
+
+.destiny-option-sub {
+    font-size: 1rem;
+    color: var(--color-gray-500);
+    display: block;
+}
+
+/* ======================
    ルーレット画面
    ====================== */
 .roulette-container {
@@ -483,6 +562,82 @@ body {
 }
 
 /* ======================
+   アフィリエイトセクション
+   ====================== */
+.affiliate-section {
+    margin: 60px 0 40px;
+    padding: 40px 0;
+    border-top: 1px solid var(--color-gray-200);
+}
+
+.affiliate-title {
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--color-black);
+    margin-bottom: 10px;
+    text-align: center;
+    letter-spacing: 0.05em;
+}
+
+.affiliate-subtitle {
+    font-size: 1rem;
+    color: var(--color-gray-500);
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.affiliate-links {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.affiliate-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 25px 30px;
+    border: 1px solid var(--color-gray-300);
+    background: var(--color-white);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.affiliate-btn:hover {
+    border-color: var(--color-black);
+    background: var(--color-gray-100);
+}
+
+.affiliate-service {
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: var(--color-black);
+    margin-bottom: 5px;
+    display: block;
+}
+
+.affiliate-desc {
+    font-size: 0.875rem;
+    color: var(--color-gray-500);
+    display: block;
+}
+
+.affiliate-disclosure {
+    padding: 20px;
+    background: var(--color-gray-100);
+    border-left: 3px solid var(--color-gray-300);
+}
+
+.disclosure-text {
+    font-size: 0.75rem;
+    color: var(--color-gray-500);
+    line-height: 1.8;
+}
+
+/* ======================
    結果アクション
    ====================== */
 .result-actions {
@@ -570,5 +725,21 @@ body {
 
     .destination-city {
         font-size: 1.75rem;
+    }
+}
+
+/* ======================
+   Q5: 旅のスタイル
+   ====================== */
+.environment-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+    .environment-options {
+        grid-template-columns: 1fr;
     }
 }

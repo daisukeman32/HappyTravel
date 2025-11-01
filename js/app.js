@@ -16,11 +16,12 @@ let appSettings = {
     budget: 50000,
     nights: 1,
     transport: ['train'],
+    environment: 'any',
     mode: 'normal'
 };
 
 let currentQuestion = 0;
-const totalQuestions = 5;
+const totalQuestions = 6;
 
 let mainMap = null;
 let resultMap = null;
@@ -35,6 +36,15 @@ const sounds = {
     rouletteBlink: new Audio('se/電子ルーレットの出目が点滅.mp3')
 };
 
+// 音量設定
+sounds.button.volume = 0.3; // 決定ボタンの音量を下げる
+
+// ルーレット回転音のシームレスループ設定
+sounds.rouletteSpin.addEventListener('ended', function() {
+    this.currentTime = 0;
+    this.play().catch(e => console.log('ループ再生エラー:', e));
+});
+
 // 音声再生ヘルパー関数
 function playSound(soundName) {
     try {
@@ -44,6 +54,18 @@ function playSound(soundName) {
         }
     } catch (e) {
         console.log('音声再生エラー:', e);
+    }
+}
+
+// 音声停止ヘルパー関数
+function stopSound(soundName) {
+    try {
+        if (sounds[soundName]) {
+            sounds[soundName].pause();
+            sounds[soundName].currentTime = 0;
+        }
+    } catch (e) {
+        console.log('音声停止エラー:', e);
     }
 }
 
@@ -176,9 +198,35 @@ function setupEventListeners() {
     });
 
     // Q4: 交通手段
+    // お任せチェックボックスの処理
+    const transportAny = document.getElementById('transport-any');
+    const transportCheckboxes = document.querySelectorAll('input[name="transport"]:not(#transport-any)');
+
+    // お任せがチェックされたら全て選択
+    transportAny.addEventListener('change', function() {
+        if (this.checked) {
+            transportCheckboxes.forEach(cb => {
+                cb.checked = true;
+            });
+        } else {
+            transportCheckboxes.forEach(cb => {
+                cb.checked = false;
+            });
+        }
+    });
+
+    // 個別の交通手段チェックボックスの処理
+    transportCheckboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+            // 全ての個別チェックボックスがチェックされているか確認
+            const allChecked = Array.from(transportCheckboxes).every(checkbox => checkbox.checked);
+            transportAny.checked = allChecked;
+        });
+    });
+
     document.getElementById('q4-next').addEventListener('click', () => {
         playSound('button');
-        const checked = document.querySelectorAll('input[name="transport"]:checked');
+        const checked = document.querySelectorAll('input[name="transport"]:not(#transport-any):checked');
         if (checked.length === 0) {
             alert('交通手段を1つ以上選択してください');
             return;
@@ -187,18 +235,32 @@ function setupEventListeners() {
         goToQuestion(5);
     });
 
-    // Q5: モード
+    // Q5: 旅のスタイル
+    setupOptionButtons('.environment-options .option-btn', (value) => {
+        playSound('button');
+        appSettings.environment = value;
+        setTimeout(() => goToQuestion(6), 300);
+    });
+
+    // Q6: モード
     setupOptionButtons('.mode-options .option-btn', (value) => {
         playSound('button');
         appSettings.mode = value;
-        setTimeout(() => startRoulette(), 500);
+        setTimeout(() => showDestinyScreen(), 500);
+    });
+
+    // 運命の質問画面
+    document.getElementById('accept-destiny-btn').addEventListener('click', () => {
+        playSound('button');
+        setTimeout(() => startRoulette(), 300);
+    });
+
+    document.getElementById('reject-destiny-btn').addEventListener('click', () => {
+        playSound('button');
+        resetToIntro();
     });
 
     // 結果画面
-    document.getElementById('retry-btn').addEventListener('click', () => {
-        playSound('button');
-        retryJourney();
-    });
     document.getElementById('reset-btn').addEventListener('click', () => {
         playSound('button');
         resetToIntro();
@@ -258,6 +320,13 @@ function goToQuestion(questionNumber) {
 }
 
 // ======================
+// 運命の質問画面を表示
+// ======================
+function showDestinyScreen() {
+    showScreen('destiny-screen');
+}
+
+// ======================
 // ルーレット開始
 // ======================
 async function startRoulette() {
@@ -287,7 +356,17 @@ async function startRoulette() {
     document.getElementById('prefecture-roulette').classList.add('hidden');
     document.getElementById('city-roulette').classList.remove('hidden');
 
-    const eligibleCities = cities.filter(c => c.prefId === selectedPrefecture.id);
+    let eligibleCities = cities.filter(c => c.prefId === selectedPrefecture.id);
+
+    // 環境タイプでフィルタリング
+    if (appSettings.environment !== 'any') {
+        const filtered = eligibleCities.filter(c => c.environment === appSettings.environment);
+        // フィルタ後に候補が残っている場合のみ適用
+        if (filtered.length > 0) {
+            eligibleCities = filtered;
+        }
+    }
+
     selectedCity = await runCityRoulette(eligibleCities);
 
     await sleep(1000);
@@ -355,8 +434,18 @@ async function runPrefectureRoulette(eligiblePrefectures) {
     const iterations = 30;
     const baseDelay = 50;
 
-    // ルーレット開始音
+    // 総所要時間を計算
+    let totalTime = 0;
+    for (let i = 0; i < iterations; i++) {
+        totalTime += baseDelay + (i * 15);
+    }
+    const slowSoundTime = totalTime - 3000; // 最後の3秒前
+
+    // ルーレット回転音を開始（ループ再生）
     playSound('rouletteSpin');
+
+    let elapsedTime = 0;
+    let slowSoundPlayed = false;
 
     for (let i = 0; i < iterations; i++) {
         const randomPref = eligiblePrefectures[Math.floor(Math.random() * eligiblePrefectures.length)];
@@ -369,11 +458,14 @@ async function runPrefectureRoulette(eligiblePrefectures) {
 
         const delay = baseDelay + (i * 15);
         await sleep(delay);
+        elapsedTime += delay;
         rouletteItem.classList.remove('highlight');
 
-        // 終盤で減速音を再生
-        if (i === iterations - 5) {
-            playSound('rouletteSlow');
+        // 最後の3秒前に減速音に切り替え
+        if (!slowSoundPlayed && elapsedTime >= slowSoundTime) {
+            stopSound('rouletteSpin'); // 回転音を停止
+            playSound('rouletteSlow'); // 減速音を再生
+            slowSoundPlayed = true;
         }
     }
 
@@ -411,8 +503,18 @@ async function runCityRoulette(eligibleCities) {
     const iterations = 20;
     const baseDelay = 50;
 
-    // ルーレット開始音
+    // 総所要時間を計算
+    let totalTime = 0;
+    for (let i = 0; i < iterations; i++) {
+        totalTime += baseDelay + (i * 10);
+    }
+    const slowSoundTime = totalTime - 3000; // 最後の3秒前
+
+    // ルーレット回転音を開始（ループ再生）
     playSound('rouletteSpin');
+
+    let elapsedTime = 0;
+    let slowSoundPlayed = false;
 
     for (let i = 0; i < iterations; i++) {
         const randomCity = eligibleCities[Math.floor(Math.random() * eligibleCities.length)];
@@ -425,11 +527,14 @@ async function runCityRoulette(eligibleCities) {
 
         const delay = baseDelay + (i * 10);
         await sleep(delay);
+        elapsedTime += delay;
         rouletteItem.classList.remove('highlight');
 
-        // 終盤で減速音を再生
-        if (i === iterations - 5) {
-            playSound('rouletteSlow');
+        // 最後の3秒前に減速音に切り替え
+        if (!slowSoundPlayed && elapsedTime >= slowSoundTime) {
+            stopSound('rouletteSpin'); // 回転音を停止
+            playSound('rouletteSlow'); // 減速音を再生
+            slowSoundPlayed = true;
         }
     }
 
@@ -469,7 +574,33 @@ function showResult() {
     document.getElementById('result-cost').textContent = `約${cost.toLocaleString()}円`;
     document.getElementById('result-time').textContent = `約${time.toFixed(1)}時間`;
 
+    // アフィリエイトリンクを更新
+    updateAffiliateLinks();
+
     initializeResultMap();
+}
+
+// ======================
+// アフィリエイトリンク更新
+// ======================
+function updateAffiliateLinks() {
+    const prefName = selectedPrefecture.name;
+    const cityName = selectedCity.name;
+    const searchQuery = `${prefName} ${cityName}`;
+
+    // 楽天トラベル検索URL
+    const rakutenUrl = `https://travel.rakuten.co.jp/HOTEL/SimpleSearch?f_teikei=&f_dai=&f_chu=&f_shou=&f_search_type=1&f_nen1=&f_tuki1=&f_hi1=&f_nen2=&f_tuki2=&f_hi2=&f_otona_su=2&f_s1=0&f_s2=0&f_y1=0&f_y2=0&f_y3=0&f_y4=0&f_camp_id=&f_flg=PLAN&f_keyword=${encodeURIComponent(searchQuery)}`;
+
+    // じゃらん検索URL
+    const jalanUrl = `https://www.jalan.net/uw/uwp1100/uww1101init.do?keyword=${encodeURIComponent(searchQuery)}&rootCd=04&stayYear=&stayMonth=&stayDay=&stayCount=1&dateUndecided=1&roomCount=1&adultNum=2&minPrice=0&maxPrice=999999`;
+
+    // Booking.com検索URL
+    const bookingUrl = `https://www.booking.com/searchresults.ja.html?ss=${encodeURIComponent(searchQuery)}`;
+
+    // リンクを設定
+    document.getElementById('rakuten-link').href = rakutenUrl;
+    document.getElementById('jalan-link').href = jalanUrl;
+    document.getElementById('booking-link').href = bookingUrl;
 }
 
 // ======================
@@ -506,18 +637,6 @@ function initializeResultMap() {
     }).addTo(resultMap);
 
     resultMap.fitBounds(route.getBounds(), { padding: [50, 50] });
-}
-
-// ======================
-// もう一度回す
-// ======================
-async function retryJourney() {
-    showScreen('roulette-screen');
-    document.getElementById('prefecture-roulette').classList.remove('hidden');
-    document.getElementById('city-roulette').classList.add('hidden');
-
-    initializeMainMap();
-    await startRoulette();
 }
 
 // ======================
