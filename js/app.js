@@ -13,15 +13,14 @@ let departurePref = null;
 let departureCity = null;
 
 let appSettings = {
-    budget: 50000,
-    nights: 1,
+    maxDistance: 'any',  // 100, 300, 600, 'any'
     transport: ['train'],
     environment: 'any',
     mode: 'normal'
 };
 
 let currentQuestion = 0;
-const totalQuestions = 5;
+const totalQuestions = 4;
 
 let mainMap = null;
 let resultMap = null;
@@ -166,38 +165,14 @@ function setupEventListeners() {
         goToQuestion(2);
     });
 
-    // Q2: 予算
-    setupOptionButtons('.budget-options .option-btn', (value) => {
+    // Q2: 移動距離
+    setupOptionButtons('.distance-options .option-btn', (value) => {
         playSound('button');
-        if (value === 'custom') {
-            document.getElementById('custom-budget').classList.remove('hidden');
-            document.getElementById('q2-next').classList.remove('hidden');
-        } else {
-            document.getElementById('custom-budget').classList.add('hidden');
-            appSettings.budget = parseInt(value);
-            setTimeout(() => goToQuestion(3), 300);
-        }
+        appSettings.maxDistance = value;
+        setTimeout(() => goToQuestion(3), 300);
     });
 
-    document.getElementById('q2-next').addEventListener('click', () => {
-        playSound('button');
-        const customBudget = parseInt(document.getElementById('budget-input').value);
-        if (customBudget && customBudget >= 10000) {
-            appSettings.budget = customBudget;
-            goToQuestion(3);
-        } else {
-            alert('10,000円以上の金額を入力してください');
-        }
-    });
-
-    // Q3: 宿泊日数
-    setupOptionButtons('.nights-options .option-btn', (value) => {
-        playSound('button');
-        appSettings.nights = parseInt(value);
-        setTimeout(() => goToQuestion(4), 300);
-    });
-
-    // Q4: 交通手段
+    // Q3: 交通手段
     // お任せチェックボックスの処理
     const transportAny = document.getElementById('transport-any');
     const transportCheckboxes = document.querySelectorAll('input[name="transport"]:not(#transport-any)');
@@ -224,7 +199,7 @@ function setupEventListeners() {
         });
     });
 
-    document.getElementById('q4-next').addEventListener('click', () => {
+    document.getElementById('q3-next').addEventListener('click', () => {
         playSound('button');
         const checked = document.querySelectorAll('input[name="transport"]:not(#transport-any):checked');
         if (checked.length === 0) {
@@ -232,10 +207,10 @@ function setupEventListeners() {
             return;
         }
         appSettings.transport = Array.from(checked).map(cb => cb.value);
-        goToQuestion(5);
+        goToQuestion(4);
     });
 
-    // Q5: モード
+    // Q4: モード
     setupOptionButtons('.mode-options .option-btn', (value) => {
         playSound('button');
         appSettings.mode = value;
@@ -401,18 +376,12 @@ function filterPrefectures() {
             pref.lat, pref.lng
         );
 
-        const travelCost = estimateTravelCost(distance, appSettings.transport);
-        const travelTime = estimateTravelTime(distance, appSettings.transport);
-
-        if (appSettings.mode === 'normal') {
-            if (travelCost > appSettings.budget * 0.6) return false;
-            if (appSettings.nights === 0 && travelTime > 5) return false;
-            if (appSettings.nights === 1 && travelTime > 6) return false;
-        } else if (appSettings.mode === 'mystery') {
-            if (travelCost > appSettings.budget * 0.6) return false;
-        } else if (appSettings.mode === 'extreme') {
-            if (travelCost > appSettings.budget * 0.6) return false;
-            if (distance < 200) return false;
+        // 距離によるフィルタリング
+        if (appSettings.maxDistance !== 'any') {
+            const maxDist = parseInt(appSettings.maxDistance);
+            if (maxDist === 100 && distance > 100) return false;
+            if (maxDist === 300 && (distance < 100 || distance > 300)) return false;
+            if (maxDist === 600 && distance < 300) return false;
         }
 
         return true;
@@ -424,15 +393,15 @@ function filterPrefectures() {
 // ======================
 async function runPrefectureRoulette(eligiblePrefectures) {
     const rouletteItem = document.getElementById('roulette-item');
-    const iterations = 30;
+    const iterations = 20;  // 30から20に短縮
     const baseDelay = 50;
 
     // 総所要時間を計算
     let totalTime = 0;
     for (let i = 0; i < iterations; i++) {
-        totalTime += baseDelay + (i * 15);
+        totalTime += baseDelay + (i * 10);  // 15から10に短縮
     }
-    const slowSoundTime = totalTime - 3000; // 最後の3秒前
+    const slowSoundTime = totalTime - 2000; // 最後の2秒前（3秒から2秒に変更）
 
     // ルーレット回転音を開始（ループ再生）
     playSound('rouletteSpin');
@@ -449,12 +418,12 @@ async function runPrefectureRoulette(eligiblePrefectures) {
             mainMap.setView([randomPref.lat, randomPref.lng], 6);
         }
 
-        const delay = baseDelay + (i * 15);
+        const delay = baseDelay + (i * 10);  // 15から10に短縮
         await sleep(delay);
         elapsedTime += delay;
         rouletteItem.classList.remove('highlight');
 
-        // 最後の3秒前に減速音に切り替え
+        // 最後の2秒前に減速音に切り替え
         if (!slowSoundPlayed && elapsedTime >= slowSoundTime) {
             stopSound('rouletteSpin'); // 回転音を停止
             playSound('rouletteSlow'); // 減速音を再生
@@ -463,15 +432,11 @@ async function runPrefectureRoulette(eligiblePrefectures) {
     }
 
     let finalSelection;
-    if (appSettings.mode === 'extreme') {
-        const sortedByDistance = eligiblePrefectures.sort((a, b) => {
-            const distA = calculateDistance(departureCity.lat, departureCity.lng, a.lat, a.lng);
-            const distB = calculateDistance(departureCity.lat, departureCity.lng, b.lat, b.lng);
-            return distB - distA;
-        });
-        const topCount = Math.ceil(sortedByDistance.length * 0.3);
-        finalSelection = sortedByDistance[Math.floor(Math.random() * topCount)];
+    if (appSettings.mode === 'mystery') {
+        // ミステリーモードでは完全ランダム
+        finalSelection = eligiblePrefectures[Math.floor(Math.random() * eligiblePrefectures.length)];
     } else {
+        // リアルモードでも完全ランダム（距離制限は既にフィルタで適用済み）
         finalSelection = eligiblePrefectures[Math.floor(Math.random() * eligiblePrefectures.length)];
     }
 
@@ -493,7 +458,7 @@ async function runPrefectureRoulette(eligiblePrefectures) {
 // ======================
 async function runCityRoulette(eligibleCities) {
     const rouletteItem = document.getElementById('city-roulette-item');
-    const iterations = 20;
+    const iterations = 15;  // 20から15に短縮
     const baseDelay = 50;
 
     // 総所要時間を計算
@@ -501,7 +466,7 @@ async function runCityRoulette(eligibleCities) {
     for (let i = 0; i < iterations; i++) {
         totalTime += baseDelay + (i * 10);
     }
-    const slowSoundTime = totalTime - 3000; // 最後の3秒前
+    const slowSoundTime = totalTime - 1500; // 最後の1.5秒前
 
     // ルーレット回転音を開始（ループ再生）
     playSound('rouletteSpin');
@@ -523,7 +488,7 @@ async function runCityRoulette(eligibleCities) {
         elapsedTime += delay;
         rouletteItem.classList.remove('highlight');
 
-        // 最後の3秒前に減速音に切り替え
+        // 最後の1.5秒前に減速音に切り替え
         if (!slowSoundPlayed && elapsedTime >= slowSoundTime) {
             stopSound('rouletteSpin'); // 回転音を停止
             playSound('rouletteSlow'); // 減速音を再生

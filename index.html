@@ -58,68 +58,33 @@
                     <button class="btn hidden" id="q1-2-next">次へ</button>
                 </div>
 
-                <!-- Q2: 予算 -->
+                <!-- Q2: 移動距離 -->
                 <div class="question hidden" id="q2" data-question="2">
-                    <h2 class="question-title">予算はいくらですか？</h2>
-                    <p class="question-subtitle">交通費と宿泊費の合計予算（円）</p>
+                    <h2 class="question-title">どこまで行きたい？</h2>
+                    <p class="question-subtitle">移動距離の目安を選んでください</p>
 
-                    <div class="budget-options">
-                        <button class="option-btn" data-value="30000">
-                            <span class="option-value">30,000円</span>
-                            <span class="option-label">気軽に</span>
+                    <div class="distance-options">
+                        <button class="option-btn" data-value="100">
+                            <span class="option-value">サクッと近場へ</span>
+                            <span class="option-label">〜100km</span>
                         </button>
-                        <button class="option-btn" data-value="50000">
-                            <span class="option-value">50,000円</span>
-                            <span class="option-label">標準</span>
+                        <button class="option-btn" data-value="300">
+                            <span class="option-value">少し遠くへ</span>
+                            <span class="option-label">100〜300km</span>
                         </button>
-                        <button class="option-btn" data-value="100000">
-                            <span class="option-value">100,000円</span>
-                            <span class="option-label">ゆったり</span>
+                        <button class="option-btn" data-value="600">
+                            <span class="option-value">思い切って遠出</span>
+                            <span class="option-label">300km以上</span>
                         </button>
-                        <button class="option-btn" data-value="custom">
-                            <span class="option-value">カスタム</span>
-                            <span class="option-label">自分で入力</span>
+                        <button class="option-btn" data-value="any">
+                            <span class="option-value">お任せ</span>
+                            <span class="option-label">距離は気にしない</span>
                         </button>
                     </div>
-
-                    <div class="custom-budget hidden" id="custom-budget">
-                        <input type="number" id="budget-input" class="text-input" placeholder="金額を入力（円）" min="10000" step="1000">
-                    </div>
-
-                    <button class="btn hidden" id="q2-next">次へ</button>
                 </div>
 
-                <!-- Q3: 宿泊日数 -->
+                <!-- Q3: 交通手段 -->
                 <div class="question hidden" id="q3" data-question="3">
-                    <h2 class="question-title">何泊しますか？</h2>
-                    <p class="question-subtitle">旅の期間を選んでください</p>
-
-                    <div class="nights-options">
-                        <button class="option-btn" data-value="0">
-                            <span class="option-value">日帰り</span>
-                            <span class="option-label">サクッと</span>
-                        </button>
-                        <button class="option-btn" data-value="1">
-                            <span class="option-value">1泊</span>
-                            <span class="option-label">週末</span>
-                        </button>
-                        <button class="option-btn" data-value="2">
-                            <span class="option-value">2泊</span>
-                            <span class="option-label">連休</span>
-                        </button>
-                        <button class="option-btn" data-value="3">
-                            <span class="option-value">3泊</span>
-                            <span class="option-label">長期</span>
-                        </button>
-                        <button class="option-btn" data-value="5">
-                            <span class="option-value">5泊以上</span>
-                            <span class="option-label">ゆっくり</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Q4: 交通手段 -->
-                <div class="question hidden" id="q4" data-question="4">
                     <h2 class="question-title">使える交通手段は？</h2>
                     <p class="question-subtitle">複数選択可</p>
 
@@ -166,11 +131,11 @@
                         </label>
                     </div>
 
-                    <button class="btn" id="q4-next">次へ</button>
+                    <button class="btn" id="q3-next">次へ</button>
                 </div>
 
-                <!-- Q5: モード選択 -->
-                <div class="question hidden" id="q5" data-question="5">
+                <!-- Q4: モード選択 -->
+                <div class="question hidden" id="q4" data-question="4">
                     <h2 class="question-title">どんな旅にしますか？</h2>
                     <p class="question-subtitle">旅のモードを選んでください</p>
 
