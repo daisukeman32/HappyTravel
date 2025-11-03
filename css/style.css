@@ -238,6 +238,7 @@ body {
    選択肢ボタン
    ====================== */
 .budget-options,
+.distance-options,
 .nights-options,
 .mode-options,
 .transport-options {
@@ -247,8 +248,13 @@ body {
 }
 
 .budget-options,
+.distance-options,
 .nights-options {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: 1fr 1fr;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 40px;
 }
 
 .mode-options {
