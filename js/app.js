@@ -30,20 +30,12 @@ let resultMap = null;
 // ======================
 const sounds = {
     button: new Audio('se/決定ボタンを押す7.mp3'),
-    cursorMove: new Audio('se/カーソル移動12.mp3'),
-    rouletteSpin: new Audio('se/電子ルーレット回転中.mp3'),
-    rouletteSlow: new Audio('se/電子ルーレットが徐々に止まる.mp3'),
+    roulette: new Audio('se/電子ルーレット.mp3'),
     rouletteBlink: new Audio('se/電子ルーレットの出目が点滅.mp3')
 };
 
 // 音量設定
 sounds.button.volume = 0.3; // 決定ボタンの音量を下げる
-
-// ルーレット回転音のシームレスループ設定
-sounds.rouletteSpin.addEventListener('ended', function() {
-    this.currentTime = 0;
-    this.play().catch(e => console.log('ループ再生エラー:', e));
-});
 
 // 音声再生ヘルパー関数
 function playSound(soundName) {
@@ -151,7 +143,6 @@ function setupEventListeners() {
 
     // Q1-2: 市区町村選択
     document.getElementById('departure-city').addEventListener('change', function() {
-        playSound('cursorMove');
         const cityId = parseInt(this.value);
         if (cityId) {
             departureCity = cities.find(c => c.id === cityId);
@@ -395,21 +386,11 @@ function filterPrefectures() {
 // ======================
 async function runPrefectureRoulette(eligiblePrefectures) {
     const rouletteItem = document.getElementById('roulette-item');
-    const iterations = 20;  // 30から20に短縮
+    const iterations = 20;
     const baseDelay = 50;
 
-    // 総所要時間を計算
-    let totalTime = 0;
-    for (let i = 0; i < iterations; i++) {
-        totalTime += baseDelay + (i * 10);  // 15から10に短縮
-    }
-    const slowSoundTime = totalTime - 2000; // 最後の2秒前（3秒から2秒に変更）
-
-    // ルーレット回転音を開始（ループ再生）
-    playSound('rouletteSpin');
-
-    let elapsedTime = 0;
-    let slowSoundPlayed = false;
+    // ルーレット音を開始
+    playSound('roulette');
 
     for (let i = 0; i < iterations; i++) {
         const randomPref = eligiblePrefectures[Math.floor(Math.random() * eligiblePrefectures.length)];
@@ -420,25 +401,15 @@ async function runPrefectureRoulette(eligiblePrefectures) {
             mainMap.setView([randomPref.lat, randomPref.lng], 6);
         }
 
-        const delay = baseDelay + (i * 10);  // 15から10に短縮
+        const delay = baseDelay + (i * 10);
         await sleep(delay);
-        elapsedTime += delay;
         rouletteItem.classList.remove('highlight');
-
-        // 最後の2秒前に減速音に切り替え
-        if (!slowSoundPlayed && elapsedTime >= slowSoundTime) {
-            stopSound('rouletteSpin'); // 回転音を停止
-            playSound('rouletteSlow'); // 減速音を再生
-            slowSoundPlayed = true;
-        }
     }
 
     let finalSelection;
     if (appSettings.mode === 'mystery') {
-        // ミステリーモードでは完全ランダム
         finalSelection = eligiblePrefectures[Math.floor(Math.random() * eligiblePrefectures.length)];
     } else {
-        // リアルモードでも完全ランダム（距離制限は既にフィルタで適用済み）
         finalSelection = eligiblePrefectures[Math.floor(Math.random() * eligiblePrefectures.length)];
     }
 
@@ -447,6 +418,9 @@ async function runPrefectureRoulette(eligiblePrefectures) {
 
     // 確定時の点滅音
     playSound('rouletteBlink');
+
+    // 赤い半透明フラッシュ演出
+    showRedFlash();
 
     if (mainMap) {
         mainMap.setView([finalSelection.lat, finalSelection.lng], 8);
@@ -460,21 +434,11 @@ async function runPrefectureRoulette(eligiblePrefectures) {
 // ======================
 async function runCityRoulette(eligibleCities) {
     const rouletteItem = document.getElementById('city-roulette-item');
-    const iterations = 15;  // 20から15に短縮
+    const iterations = 15;
     const baseDelay = 50;
 
-    // 総所要時間を計算
-    let totalTime = 0;
-    for (let i = 0; i < iterations; i++) {
-        totalTime += baseDelay + (i * 10);
-    }
-    const slowSoundTime = totalTime - 1500; // 最後の1.5秒前
-
-    // ルーレット回転音を開始（ループ再生）
-    playSound('rouletteSpin');
-
-    let elapsedTime = 0;
-    let slowSoundPlayed = false;
+    // ルーレット音を開始
+    playSound('roulette');
 
     for (let i = 0; i < iterations; i++) {
         const randomCity = eligibleCities[Math.floor(Math.random() * eligibleCities.length)];
@@ -487,15 +451,7 @@ async function runCityRoulette(eligibleCities) {
 
         const delay = baseDelay + (i * 10);
         await sleep(delay);
-        elapsedTime += delay;
         rouletteItem.classList.remove('highlight');
-
-        // 最後の1.5秒前に減速音に切り替え
-        if (!slowSoundPlayed && elapsedTime >= slowSoundTime) {
-            stopSound('rouletteSpin'); // 回転音を停止
-            playSound('rouletteSlow'); // 減速音を再生
-            slowSoundPlayed = true;
-        }
     }
 
     const finalSelection = eligibleCities[Math.floor(Math.random() * eligibleCities.length)];
@@ -504,6 +460,9 @@ async function runCityRoulette(eligibleCities) {
 
     // 確定時の点滅音
     playSound('rouletteBlink');
+
+    // 赤い半透明フラッシュ演出
+    showRedFlash();
 
     if (mainMap) {
         mainMap.setView([finalSelection.lat, finalSelection.lng], 12);
@@ -727,4 +686,28 @@ function estimateTravelTime(distance, transportMethods) {
     });
 
     return minTime;
+}
+
+// ======================
+// 赤い半透明フラッシュ演出
+// ======================
+function showRedFlash() {
+    // オーバーレイ要素を作成
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.backgroundColor = 'rgba(255, 0, 0, 0.5)';
+    overlay.style.zIndex = '9999';
+    overlay.style.pointerEvents = 'none';
+    overlay.style.animation = 'redFlash 0.6s ease-out';
+
+    document.body.appendChild(overlay);
+
+    // アニメーションが終わったら削除
+    setTimeout(() => {
+        document.body.removeChild(overlay);
+    }, 600);
 }

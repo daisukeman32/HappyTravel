@@ -749,3 +749,18 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* ======================
+   アニメーション
+   ====================== */
+@keyframes redFlash {
+    0% {
+        opacity: 0;
+    }
+    30% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
