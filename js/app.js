@@ -29,7 +29,8 @@ let resultMap = null;
 // 効果音
 // ======================
 const sounds = {
-    button: new Audio('se/決定ボタンを押す26.mp3'),
+    button: new Audio('se/決定ボタンを押す7.mp3'),
+    cursorMove: new Audio('se/カーソル移動12.mp3'),
     rouletteSpin: new Audio('se/電子ルーレット回転中.mp3'),
     rouletteSlow: new Audio('se/電子ルーレットが徐々に止まる.mp3'),
     rouletteBlink: new Audio('se/電子ルーレットの出目が点滅.mp3')
@@ -150,6 +151,7 @@ function setupEventListeners() {
 
     // Q1-2: 市区町村選択
     document.getElementById('departure-city').addEventListener('change', function() {
+        playSound('cursorMove');
         const cityId = parseInt(this.value);
         if (cityId) {
             departureCity = cities.find(c => c.id === cityId);
