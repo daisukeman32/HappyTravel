@@ -419,8 +419,8 @@ async function runPrefectureRoulette(eligiblePrefectures) {
     // 確定時の点滅音
     playSound('rouletteBlink');
 
-    // 赤い半透明フラッシュ演出
-    showRedFlash();
+    // ワープ風ズーム演出
+    showZoomEffect(rouletteItem);
 
     if (mainMap) {
         mainMap.setView([finalSelection.lat, finalSelection.lng], 8);
@@ -461,8 +461,8 @@ async function runCityRoulette(eligibleCities) {
     // 確定時の点滅音
     playSound('rouletteBlink');
 
-    // 赤い半透明フラッシュ演出
-    showRedFlash();
+    // ワープ風ズーム演出
+    showZoomEffect(rouletteItem);
 
     if (mainMap) {
         mainMap.setView([finalSelection.lat, finalSelection.lng], 12);
@@ -689,25 +689,14 @@ function estimateTravelTime(distance, transportMethods) {
 }
 
 // ======================
-// 赤い半透明フラッシュ演出
+// ワープ風ズーム演出
 // ======================
-function showRedFlash() {
-    // オーバーレイ要素を作成
-    const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.backgroundColor = 'rgba(255, 0, 0, 0.5)';
-    overlay.style.zIndex = '9999';
-    overlay.style.pointerEvents = 'none';
-    overlay.style.animation = 'redFlash 0.6s ease-out';
+function showZoomEffect(element) {
+    // 要素にズームアニメーションを追加
+    element.classList.add('zoom-effect');
 
-    document.body.appendChild(overlay);
-
-    // アニメーションが終わったら削除
+    // アニメーション終了後にクラスを削除
     setTimeout(() => {
-        document.body.removeChild(overlay);
+        element.classList.remove('zoom-effect');
     }, 600);
 }
