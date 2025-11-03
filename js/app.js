@@ -416,8 +416,6 @@ async function runPrefectureRoulette(eligiblePrefectures) {
     // 確定時の点滅音
     playSound('rouletteBlink');
 
-    // ワープ風ズーム演出
-    showZoomEffect(rouletteItem);
 
     if (mainMap) {
         mainMap.setView([finalSelection.lat, finalSelection.lng], 8);
@@ -458,8 +456,6 @@ async function runCityRoulette(eligibleCities) {
     // 確定時の点滅音
     playSound('rouletteBlink');
 
-    // ワープ風ズーム演出
-    showZoomEffect(rouletteItem);
 
     if (mainMap) {
         mainMap.setView([finalSelection.lat, finalSelection.lng], 12);
@@ -685,15 +681,3 @@ function estimateTravelTime(distance, transportMethods) {
     return minTime;
 }
 
-// ======================
-// ワープ風ズーム演出
-// ======================
-function showZoomEffect(element) {
-    // 要素にズームアニメーションを追加
-    element.classList.add('zoom-effect');
-
-    // アニメーション終了後にクラスを削除
-    setTimeout(() => {
-        element.classList.remove('zoom-effect');
-    }, 600);
-}
