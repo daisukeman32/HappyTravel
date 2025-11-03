@@ -30,32 +30,24 @@
             <div class="progress-text" id="progress-text">質問 1 / 5</div>
 
             <div class="question-container">
-                <!-- Q1: 出発地（都道府県） -->
+                <!-- Q1: 出発地 -->
                 <div class="question" id="q1" data-question="1">
-                    <h2 class="question-title">出発地の都道府県を選んでください</h2>
-                    <p class="question-subtitle">あなたが今いる、または出発する都道府県</p>
+                    <h2 class="question-title">出発地を選んでください</h2>
+                    <p class="question-subtitle">あなたが今いる、または出発する場所</p>
 
                     <div class="select-wrapper">
                         <select id="departure-pref" class="select-input">
-                            <option value="">選択してください</option>
+                            <option value="">都道府県を選択</option>
+                        </select>
+                    </div>
+
+                    <div class="select-wrapper hidden" id="city-select-wrapper">
+                        <select id="departure-city" class="select-input">
+                            <option value="">市区町村を選択</option>
                         </select>
                     </div>
 
                     <button class="btn hidden" id="q1-next">次へ</button>
-                </div>
-
-                <!-- Q1-2: 出発地（市区町村） -->
-                <div class="question hidden" id="q1-2" data-question="1">
-                    <h2 class="question-title">出発地の市区町村を選んでください</h2>
-                    <p class="question-subtitle">より正確な距離計算のため</p>
-
-                    <div class="select-wrapper">
-                        <select id="departure-city" class="select-input">
-                            <option value="">選択してください</option>
-                        </select>
-                    </div>
-
-                    <button class="btn hidden" id="q1-2-next">次へ</button>
                 </div>
 
                 <!-- Q2: 移動距離 -->

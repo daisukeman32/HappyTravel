@@ -111,11 +111,38 @@ function setupEventListeners() {
     // イントロ画面
     document.getElementById('start-questions-btn').addEventListener('click', startQuestions);
 
-    // Q1: 都道府県選択
+    // Q1: 出発地選択
     document.getElementById('departure-pref').addEventListener('change', function() {
         const prefId = parseInt(this.value);
         if (prefId) {
             departurePref = prefectures.find(p => p.id === prefId);
+
+            // 市区町村セレクトボックスを表示・更新
+            const citySelectWrapper = document.getElementById('city-select-wrapper');
+            const citySelect = document.getElementById('departure-city');
+
+            citySelect.innerHTML = '<option value="">市区町村を選択</option>';
+            const departureCities = cities.filter(c => c.prefId === departurePref.id);
+            departureCities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city.id;
+                option.textContent = city.name;
+                citySelect.appendChild(option);
+            });
+
+            citySelectWrapper.classList.remove('hidden');
+            document.getElementById('q1-next').classList.add('hidden');
+        } else {
+            document.getElementById('city-select-wrapper').classList.add('hidden');
+            document.getElementById('q1-next').classList.add('hidden');
+        }
+    });
+
+    // Q1: 市区町村選択
+    document.getElementById('departure-city').addEventListener('change', function() {
+        const cityId = parseInt(this.value);
+        if (cityId) {
+            departureCity = cities.find(c => c.id === cityId);
             document.getElementById('q1-next').classList.remove('hidden');
         } else {
             document.getElementById('q1-next').classList.add('hidden');
@@ -123,36 +150,6 @@ function setupEventListeners() {
     });
 
     document.getElementById('q1-next').addEventListener('click', () => {
-        playSound('button');
-        // 市区町村セレクトボックスを更新
-        const citySelect = document.getElementById('departure-city');
-        citySelect.innerHTML = '<option value="">選択してください</option>';
-
-        const departureCities = cities.filter(c => c.prefId === departurePref.id);
-        departureCities.forEach(city => {
-            const option = document.createElement('option');
-            option.value = city.id;
-            option.textContent = city.name;
-            citySelect.appendChild(option);
-        });
-
-        // Q1-2へ移動
-        document.getElementById('q1').classList.add('hidden');
-        document.getElementById('q1-2').classList.remove('hidden');
-    });
-
-    // Q1-2: 市区町村選択
-    document.getElementById('departure-city').addEventListener('change', function() {
-        const cityId = parseInt(this.value);
-        if (cityId) {
-            departureCity = cities.find(c => c.id === cityId);
-            document.getElementById('q1-2-next').classList.remove('hidden');
-        } else {
-            document.getElementById('q1-2-next').classList.add('hidden');
-        }
-    });
-
-    document.getElementById('q1-2-next').addEventListener('click', () => {
         playSound('button');
         console.log('出発地:', departurePref.name, departureCity.name);
         goToQuestion(2);
