@@ -557,6 +557,13 @@ body {
     color: var(--color-black);
 }
 
+.time-note {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: #666;
+    text-align: center;
+}
+
 /* ======================
    地図
    ====================== */

@@ -657,22 +657,30 @@ function estimateTravelCost(distance, transportMethods) {
 }
 
 function estimateTravelTime(distance, transportMethods) {
+    // 直線距離を実際の道路距離に補正（約1.4倍）
+    const DISTANCE_FACTOR = 1.4;
+    const actualDistance = distance * DISTANCE_FACTOR;
+
     let minTime = Infinity;
 
     transportMethods.forEach(method => {
         let time = 0;
         switch (method) {
             case 'train':
-                time = distance / 80;
+                // 新幹線想定、乗り換え時間込み
+                time = (actualDistance / 100) + 0.5;
                 break;
             case 'airplane':
-                time = (distance / 500) + 2;
+                // 空港アクセス・搭乗手続き込み
+                time = (actualDistance / 500) + 3;
                 break;
             case 'car':
-                time = distance / 60;
+                // 高速道路想定
+                time = actualDistance / 70;
                 break;
             case 'bus':
-                time = distance / 50;
+                // 一般道+高速
+                time = actualDistance / 55;
                 break;
         }
         if (time < minTime) minTime = time;
