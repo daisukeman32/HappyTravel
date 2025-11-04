@@ -659,8 +659,8 @@ function estimateTravelCost(distance, transportMethods) {
 }
 
 function estimateTravelTime(distance, transportMethods) {
-    // 直線距離を実際の道路距離に補正（約1.4倍）
-    const DISTANCE_FACTOR = 1.4;
+    // 直線距離を実際の道路距離に補正（約1.3倍）
+    const DISTANCE_FACTOR = 1.3;
     const actualDistance = distance * DISTANCE_FACTOR;
 
     let minTime = Infinity;
