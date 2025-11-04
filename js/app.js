@@ -410,12 +410,14 @@ async function runPrefectureRoulette(eligiblePrefectures) {
         finalSelection = eligiblePrefectures[Math.floor(Math.random() * eligiblePrefectures.length)];
     }
 
+    // ルーレット音を停止
+    stopSound('roulette');
+
     rouletteItem.textContent = finalSelection.name;
     rouletteItem.classList.add('highlight');
 
     // 確定時の点滅音
     playSound('rouletteBlink');
-
 
     if (mainMap) {
         mainMap.setView([finalSelection.lat, finalSelection.lng], 8);
@@ -449,13 +451,15 @@ async function runCityRoulette(eligibleCities) {
         rouletteItem.classList.remove('highlight');
     }
 
+    // ルーレット音を停止
+    stopSound('roulette');
+
     const finalSelection = eligibleCities[Math.floor(Math.random() * eligibleCities.length)];
     rouletteItem.textContent = finalSelection.name;
     rouletteItem.classList.add('highlight');
 
     // 確定時の点滅音
     playSound('rouletteBlink');
-
 
     if (mainMap) {
         mainMap.setView([finalSelection.lat, finalSelection.lng], 12);
