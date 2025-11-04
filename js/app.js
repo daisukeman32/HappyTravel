@@ -115,6 +115,7 @@ function setupEventListeners() {
     document.getElementById('departure-pref').addEventListener('change', function() {
         const prefId = parseInt(this.value);
         if (prefId) {
+            playSound('button');
             departurePref = prefectures.find(p => p.id === prefId);
 
             // 市区町村セレクトボックスを表示・更新
@@ -142,6 +143,7 @@ function setupEventListeners() {
     document.getElementById('departure-city').addEventListener('change', function() {
         const cityId = parseInt(this.value);
         if (cityId) {
+            playSound('button');
             departureCity = cities.find(c => c.id === cityId);
             document.getElementById('q1-next').classList.remove('hidden');
         } else {
