@@ -171,6 +171,7 @@ function setupEventListeners() {
 
     // お任せがチェックされたら全て選択
     transportAny.addEventListener('change', function() {
+        playSound('button');
         if (this.checked) {
             transportCheckboxes.forEach(cb => {
                 cb.checked = true;
@@ -185,6 +186,7 @@ function setupEventListeners() {
     // 個別の交通手段チェックボックスの処理
     transportCheckboxes.forEach(cb => {
         cb.addEventListener('change', () => {
+            playSound('button');
             // 全ての個別チェックボックスがチェックされているか確認
             const allChecked = Array.from(transportCheckboxes).every(checkbox => checkbox.checked);
             transportAny.checked = allChecked;
